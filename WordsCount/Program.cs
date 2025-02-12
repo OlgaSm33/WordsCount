@@ -12,23 +12,19 @@ namespace WordsCount
             var words = TextWords(text);
             var wordsCount = WordsCount(words);
 
-            var sortedKeys = wordsCount.Keys.ToList();
-            sortedKeys.Sort();
-            int mx = 0;
-            string mxWord = string.Empty;
-            foreach (var word in sortedKeys)
+            var sortedByValue = wordsCount.OrderByDescending(x => x.Value).ToDictionary(x => x.Key, x => x.Value); // сортируем по значениям
+
+            Console.WriteLine("Десять наиболее часто встречающихся слов и их количество:");
+            int count = 0;
+            foreach (var item in sortedByValue)
             {
-                if (wordsCount[word] > mx)
+                Console.WriteLine($"{item.Key} - {item.Value}");
+                count++;
+                if (count == 10)
                 {
-                    mx = wordsCount[word];
-                    mxWord = word;
+                    break;
                 }
-                //Console.WriteLine(word + " " + wordsCount[word]);
             }
-
-            Console.WriteLine($"Чаще всего встречается слово: {mxWord}");
-            Console.WriteLine($"Количество появлений в слове: {mx}");
-
         }
 
         /// <summary>
@@ -62,7 +58,8 @@ namespace WordsCount
         /// <returns></returns>
         public static string[] TextWords(string text)
         {
-            string newText = Regex.Replace(text, @"[^А-Яа-яЁё\s-]", "");
+            //string newText = Regex.Replace(text, @"[^А-Яа-яЁё\s-]", ""); // второй вариант избавления от знаков препинания и прочих символов
+            var newText = new string(text.Where(c => !char.IsPunctuation(c)).ToArray());
             char[] delimiters = new char[] { ' ', '\r', '\n' };
             var words = newText.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
             return words;
